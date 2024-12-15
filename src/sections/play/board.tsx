@@ -52,23 +52,36 @@ export default function BoardContainer() {
     };
   }, [gameFen, isGameInProgress]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [boardSize, setBoardSize] = useState(500);
+  const calculateBoardSize = () => {
+    if (typeof window === 'undefined') return 500;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    
+    // For mobile devices (width < 600px)
+    if (screenWidth < 600) {
+      return Math.min(screenWidth * 0.95, screenHeight * 0.6);
+    }
+    
+    // For tablets (width < 960px)
+    if (screenWidth < 960) {
+      return Math.min(screenWidth * 0.8, screenHeight * 0.7);
+    }
+    
+    // For desktop
+    return Math.min(screenWidth * 0.5, screenHeight * 0.8);
+  };
+
+  const [boardSize, setBoardSize] = useState(calculateBoardSize());
 
   useEffect(() => {
-    const calculateBoardSize = () => {
-      const width = window.innerWidth;
-      const height = window.innerHeight;
-
-      if (window.innerWidth < 900) {
-        setBoardSize(Math.min(width, height - 150));
-      } else {
-        setBoardSize(Math.min(width - 300, height * 0.85));
-      }
+    const handleResize = () => {
+      setBoardSize(calculateBoardSize());
     };
 
-    calculateBoardSize();
-    window.addEventListener('resize', calculateBoardSize);
-    return () => window.removeEventListener('resize', calculateBoardSize);
+    window.addEventListener('resize', handleResize);
+    handleResize(); // Initial calculation
+
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useGameData(gameAtom, gameDataAtom);

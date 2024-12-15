@@ -1,4 +1,4 @@
-import { Button, CircularProgress, Grid, Typography, Paper } from "@mui/material";
+import { Button, CircularProgress, Grid, Typography, Paper, Container, Box, useTheme, useMediaQuery } from "@mui/material";
 import { useAtom, useAtomValue } from "jotai";
 import { gameAtom, isGameInProgressAtom } from "./states";
 import { useEffect, useState } from "react";
@@ -11,6 +11,9 @@ export default function GameInProgress() {
   const [isGameInProgress, setIsGameInProgress] = useAtom(isGameInProgressAtom);
   const [analysis, setAnalysis] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
 
   useEffect(() => {
     if (game.isGameOver()) setIsGameInProgress(false);
@@ -40,61 +43,85 @@ export default function GameInProgress() {
   if (!isGameInProgress) return null;
 
   return (
-    <Grid
-      item
-      container
-      xs={12}
-      justifyContent="center"
-      alignItems="center"
-      gap={2}
-    >
-      <Grid
-        container
-        item
-        justifyContent="center"
-        alignItems="center"
-        xs={12}
-        gap={2}
-      >
-        <Typography color="white">Game in progress</Typography>
-        <CircularProgress size={20} color="info" />
-      </Grid>
+    <Container maxWidth="xl" sx={{ py: 3, height: '100vh' }}>
+      <Grid container spacing={2} sx={{ height: '100%' }}>
+        {/* Game in Progress Section */}
+        <Grid item xs={12} md={8} lg={8} sx={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: isMobile ? '60vh' : '80vh'
+        }}>
+          <Box sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            <Grid
+              container
+              item
+              justifyContent="center"
+              alignItems="center"
+              xs={12}
+              gap={2}
+            >
+              <Typography color="white">Game in progress</Typography>
+              <CircularProgress size={20} color="info" />
+            </Grid>
 
-      <Grid item container justifyContent="center" alignItems="center" xs={12}>
-        <UndoMoveButton />
-      </Grid>
+            <Grid item container justifyContent="center" alignItems="center" xs={12}>
+              <UndoMoveButton />
+            </Grid>
 
-      <Grid item container justifyContent="center" alignItems="center" xs={12}>
-        <Button 
-          variant="contained" 
-          onClick={getCoaching}
-          disabled={isAnalyzing}
-          sx={{ mr: 1 }}
-        >
-          {isAnalyzing ? 'Analyzing...' : 'Get Coaching'}
-        </Button>
-        <Button variant="outlined" onClick={handleResign}>
-          Resign
-        </Button>
-      </Grid>
+            <Grid item container justifyContent="center" alignItems="center" xs={12}>
+              <Button 
+                variant="contained" 
+                onClick={getCoaching}
+                disabled={isAnalyzing}
+                sx={{ mr: 1 }}
+              >
+                {isAnalyzing ? 'Analyzing...' : 'Get Coaching'}
+              </Button>
+              <Button variant="outlined" onClick={handleResign}>
+                Resign
+              </Button>
+            </Grid>
+          </Box>
+        </Grid>
 
-      {analysis && (
-        <Paper 
-          sx={{ 
-            bgcolor: 'black',
-            color: 'white',
-            p: 2,
-            width: '100%'
-          }}
-        >
-          <Typography variant="subtitle1" color="white" gutterBottom>
-            Coach's Analysis:
-          </Typography>
-          <Typography variant="body2" color="white" style={{ whiteSpace: 'pre-line' }}>
-            {analysis}
-          </Typography>
-        </Paper>
-      )}
-    </Grid>
+        {/* Coaching Panel Section */}
+        <Grid item xs={12} md={4} lg={4} sx={{
+          height: isMobile ? 'auto' : '100%',
+          maxHeight: isMobile ? '40vh' : 'none'
+        }}>
+          <Paper 
+            elevation={3} 
+            sx={{
+              height: '100%',
+              p: 2,
+              overflow: 'auto',
+              backgroundColor: theme.palette.mode === 'dark' ? 'background.paper' : 'background.default',
+              borderRadius: 2
+            }}
+          >
+            <Typography variant={isMobile ? 'h6' : 'h5'} gutterBottom>
+              Coach's Analysis:
+            </Typography>
+            <Box sx={{ 
+              fontSize: isMobile ? '0.9rem' : '1rem',
+              lineHeight: isMobile ? 1.4 : 1.6
+            }}>
+              {analysis && (
+                <Typography variant="body2" color="white" style={{ whiteSpace: 'pre-line' }}>
+                  {analysis}
+                </Typography>
+              )}
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }

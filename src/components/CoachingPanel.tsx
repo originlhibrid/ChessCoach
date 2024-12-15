@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Paper, CircularProgress } from '@mui/material';
+import { Box, Typography, Paper, CircularProgress, useTheme, useMediaQuery } from '@mui/material';
 import { PositionEval } from '@/types/eval';
 import { getChessCoaching } from '@/lib/openai';
 
@@ -16,6 +16,8 @@ export const CoachingPanel: React.FC<CoachingPanelProps> = ({
 }) => {
   const [coaching, setCoaching] = React.useState<string>('');
   const [loading, setLoading] = React.useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   React.useEffect(() => {
     async function getCoaching() {
@@ -39,30 +41,47 @@ export const CoachingPanel: React.FC<CoachingPanelProps> = ({
     <Paper 
       elevation={3} 
       sx={{ 
-        p: 2,
+        p: isMobile ? 1 : 2,
         m: 1,
-        minHeight: '200px',
-        maxHeight: '400px',
-        overflow: 'auto'
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2
       }}
     >
-      <Typography variant="h6" gutterBottom>
+      <Typography 
+        variant={isMobile ? "body1" : "h6"} 
+        component="div" 
+        gutterBottom
+        sx={{ 
+          fontWeight: 'medium',
+          color: theme.palette.mode === 'dark' ? 'primary.light' : 'primary.dark'
+        }}
+      >
         Chess Coach Analysis
       </Typography>
-      
-      {(loading || isAnalyzing) ? (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100px">
-          <CircularProgress />
-        </Box>
-      ) : coaching ? (
-        <Typography variant="body1" whiteSpace="pre-line">
-          {coaching}
-        </Typography>
-      ) : (
-        <Typography variant="body2" color="text.secondary">
-          Make a move to get coaching advice...
-        </Typography>
-      )}
+
+      <Box sx={{ 
+        flex: 1,
+        overflow: 'auto',
+        fontSize: isMobile ? '0.9rem' : '1rem',
+        lineHeight: isMobile ? 1.4 : 1.6,
+        '& > *': { mb: 2 }
+      }}>
+        {(loading || isAnalyzing) ? (
+          <Box display="flex" justifyContent="center" alignItems="center" minHeight="100px">
+            <CircularProgress />
+          </Box>
+        ) : coaching ? (
+          <Typography variant="body1" whiteSpace="pre-line">
+            {coaching}
+          </Typography>
+        ) : (
+          <Typography variant="body2" color="text.secondary">
+            Make a move to get coaching advice...
+          </Typography>
+        )}
+      </Box>
     </Paper>
   );
 };

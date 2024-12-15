@@ -1,5 +1,5 @@
 {
-  "name": "freechess",
+  "name": "chess-coach",
   "version": "0.1.0",
   "private": true,
   "license": "GPL-3.0-only",
@@ -13,6 +13,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@fontsource/inter": "^5.1.0",
     "@fontsource/roboto": "^5.0.3",
     "@iconify/react": "^4.1.0",
     "@mui/lab": "^5.0.0-alpha.165",
@@ -23,6 +24,7 @@
     "idb": "^8.0.0",
     "jotai": "^2.6.4",
     "next": "14.2.5",
+    "openai": "^4.20.1",
     "react": "18.2.0",
     "react-chessboard": "^4.6.0",
     "react-dom": "18.2.0",

@@ -15,7 +15,7 @@ const MenuOptions = [
   { text: "Play", icon: "streamline:chess-pawn", href: "/play" },
   { text: "Analysis", icon: "streamline:magnifying-glass-solid", href: "/" },
   {
-    text: "Database",
+    text: "Game History",
     icon: "streamline:database",
     href: "/database",
   },

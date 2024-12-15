@@ -10,7 +10,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Free Chess</title>
+        <title>Chess Coach</title>
       </Head>
       <Layout>
         <Component {...pageProps} />

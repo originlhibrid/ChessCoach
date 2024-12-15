@@ -16,6 +16,7 @@ import { CurrentPosition } from "@/types/eval";
 import EvaluationBar from "./evaluationBar";
 import CapturedPieces from "./capturedPieces";
 import { moveClassificationColors } from "@/lib/chess";
+import { useTheme, useMediaQuery } from "@mui/material";
 
 export interface Props {
   id: string;
@@ -55,12 +56,33 @@ export default function Board({
   const [showPromotionDialog, setShowPromotionDialog] = useState(false);
   const [moveClickFrom, setMoveClickFrom] = useState<Square | null>(null);
   const [moveClickTo, setMoveClickTo] = useState<Square | null>(null);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
+  const [calculatedWidth, setCalculatedWidth] = useState(500);
 
   const gameFen = game.fen();
 
   useEffect(() => {
     setClickedSquares([]);
   }, [gameFen, setClickedSquares]);
+
+  useEffect(() => {
+    const updateBoardSize = () => {
+      if (boardSize) {
+        setCalculatedWidth(boardSize);
+        return;
+      }
+
+      const width = isSmallScreen ? window.innerWidth : window.innerWidth - 700;
+      const height = isSmallScreen ? window.innerHeight - 150 : window.innerHeight * 0.95;
+      setCalculatedWidth(Math.min(width, height));
+    };
+
+    updateBoardSize();
+    window.addEventListener("resize", updateBoardSize);
+
+    return () => window.removeEventListener("resize", updateBoardSize);
+  }, [isSmallScreen, boardSize]);
 
   const isPiecePlayable = useCallback(
     ({ piece }: { piece: string }): boolean => {
@@ -225,11 +247,11 @@ export default function Board({
       justifyContent="center"
       alignItems="center"
       wrap="nowrap"
-      width={boardSize}
+      width={calculatedWidth}
     >
       {showEvaluationBar && (
         <EvaluationBar
-          height={boardRef?.current?.offsetHeight || boardSize || 400}
+          height={boardRef?.current?.offsetHeight || calculatedWidth}
           boardOrientation={boardOrientation}
           currentPositionAtom={currentPositionAtom}
         />
@@ -277,10 +299,7 @@ export default function Board({
             boardOrientation={
               boardOrientation === Color.White ? "white" : "black"
             }
-            customBoardStyle={{
-              borderRadius: "5px",
-              boxShadow: "0 2px 10px rgba(0, 0, 0, 0.5)",
-            }}
+            boardWidth={calculatedWidth}
             customArrows={customArrows}
             isDraggablePiece={isPiecePlayable}
             customSquare={SquareRenderer}

@@ -1,23 +1,19 @@
-import { Link as MuiLink } from "@mui/material";
-import NextLink from "next/link";
-import { ReactNode } from "react";
+import { styled } from '@mui/material/styles';
+import NextLink from 'next/link';
+import { forwardRef } from 'react';
 
-export default function NavLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: ReactNode;
-}) {
-  return (
-    <MuiLink
-      component={NextLink}
-      href={href}
-      underline="none"
-      color="inherit"
-      sx={{ width: "100%" }}
-    >
-      {children}
-    </MuiLink>
-  );
-}
+const StyledLink = styled(NextLink)(({ theme }) => ({
+  color: 'inherit',
+  textDecoration: 'none',
+  '&:hover': {
+    textDecoration: 'none',
+  },
+}));
+
+const NavLink = forwardRef<HTMLAnchorElement, any>((props, ref) => {
+  return <StyledLink ref={ref} {...props} />;
+});
+
+NavLink.displayName = 'NavLink';
+
+export default NavLink;

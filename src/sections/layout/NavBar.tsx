@@ -9,6 +9,7 @@ import { Icon } from "@iconify/react";
 import { useRouter } from "next/router";
 import NavLink from "@/components/NavLink";
 import Image from "next/image";
+import { Button, useTheme } from "@mui/material";
 
 interface Props {
   darkMode: boolean;
@@ -18,68 +19,114 @@ interface Props {
 export default function NavBar({ darkMode, switchDarkMode }: Props) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const router = useRouter();
+  const theme = useTheme();
 
   useEffect(() => {
     setDrawerOpen(false);
   }, [router.pathname]);
 
   return (
-    <Box sx={{ flexGrow: 1, display: "flex" }}>
-      <AppBar
-        position="static"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        enableColorOnDark
-      >
-        <Toolbar>
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="sticky">
+        <Toolbar sx={{ gap: 2 }}>
           <IconButton
             size="large"
             edge="start"
             color="inherit"
             aria-label="menu"
-            sx={{ mr: "min(0.5vw, 0.6rem)" }}
-            onClick={() => setDrawerOpen((val) => !val)}
+            onClick={() => setDrawerOpen(true)}
+            sx={{
+              display: { xs: "flex", md: "none" },
+            }}
           >
             <Icon icon="mdi:menu" />
           </IconButton>
-          <Image
-            src="/favicon-32x32.png"
-            alt="FreeChess logo"
-            width={32}
-            height={32}
-          />
+
           <NavLink href="/">
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{
-                flexGrow: 1,
-                ml: 1,
-                fontSize: { xs: "1rem", sm: "1.25rem" },
-              }}
-            >
-              Free Chess
-            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Image
+                src="/favicon-32x32.png"
+                alt="ChessCoach logo"
+                width={32}
+                height={32}
+              />
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 600,
+                  background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                ChessCoach
+              </Typography>
+            </Box>
           </NavLink>
+
+          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2, ml: 4 }}>
+            <Button
+              color="inherit"
+              component={NavLink}
+              href="/play"
+              startIcon={<Icon icon="streamline:chess-pawn" />}
+            >
+              Play
+            </Button>
+            <Button
+              color="inherit"
+              component={NavLink}
+              href="/"
+              startIcon={<Icon icon="streamline:magnifying-glass-solid" />}
+            >
+              Analysis
+            </Button>
+            <Button
+              color="inherit"
+              component={NavLink}
+              href="/database"
+              startIcon={<Icon icon="streamline:database" />}
+            >
+              History
+            </Button>
+          </Box>
+
+          <Box sx={{ flexGrow: 1 }} />
+
           <IconButton
             color="inherit"
             onClick={() => window.open("https://discord.gg/Yr99abAcUr")}
+            sx={{ 
+              '&:hover': { 
+                color: theme.palette.primary.main 
+              }
+            }}
           >
             <Icon icon="ri:discord-fill" />
           </IconButton>
+
           <IconButton
             color="inherit"
-            sx={{ ml: "min(0.6rem, 0.8vw)" }}
             onClick={() =>
               window.open("https://github.com/GuillaumeSD/freechess")
             }
+            sx={{ 
+              '&:hover': { 
+                color: theme.palette.primary.main 
+              }
+            }}
           >
             <Icon icon="mdi:github" />
           </IconButton>
+
           <IconButton
-            sx={{ ml: "min(0.6rem, 0.8vw)" }}
             onClick={switchDarkMode}
             color="inherit"
-            edge="end"
+            sx={{ 
+              '&:hover': { 
+                color: theme.palette.primary.main 
+              }
+            }}
           >
             {darkMode ? (
               <Icon icon="mdi:brightness-7" />

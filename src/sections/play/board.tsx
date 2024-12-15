@@ -8,7 +8,7 @@ import {
   enginePlayNameAtom,
 } from "./states";
 import { useChessActions } from "@/hooks/useChessActions";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useScreenSize } from "@/hooks/useScreenSize";
 import { Color } from "@/types/enums";
 import { useEngine } from "@/hooks/useEngine";
@@ -52,17 +52,24 @@ export default function BoardContainer() {
     };
   }, [gameFen, isGameInProgress]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const boardSize = useMemo(() => {
-    const width = screenSize.width;
-    const height = screenSize.height;
+  const [boardSize, setBoardSize] = useState(500);
 
-    // 900 is the md layout breakpoint
-    if (window?.innerWidth < 900) {
-      return Math.min(width, height - 150);
-    }
+  useEffect(() => {
+    const calculateBoardSize = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
 
-    return Math.min(width - 300, height * 0.85);
-  }, [screenSize]);
+      if (window.innerWidth < 900) {
+        setBoardSize(Math.min(width, height - 150));
+      } else {
+        setBoardSize(Math.min(width - 300, height * 0.85));
+      }
+    };
+
+    calculateBoardSize();
+    window.addEventListener('resize', calculateBoardSize);
+    return () => window.removeEventListener('resize', calculateBoardSize);
+  }, []);
 
   useGameData(gameAtom, gameDataAtom);
 
@@ -74,13 +81,13 @@ export default function BoardContainer() {
       boardSize={boardSize}
       whitePlayer={
         playerColor === Color.White
-          ? "You 🧠"
-          : `Stockfish level ${engineSkillLevel} 🤖`
+          ? "You "
+          : `Stockfish level ${engineSkillLevel} `
       }
       blackPlayer={
         playerColor === Color.Black
-          ? "You 🧠"
-          : `Stockfish level ${engineSkillLevel} 🤖`
+          ? "You "
+          : `Stockfish level ${engineSkillLevel} `
       }
       boardOrientation={playerColor}
       currentPositionAtom={gameDataAtom}

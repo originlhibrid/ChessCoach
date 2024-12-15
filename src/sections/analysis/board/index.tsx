@@ -1,3 +1,4 @@
+import { useEffect, useState, useMemo } from "react";
 import { useAtomValue } from "jotai";
 import {
   boardAtom,
@@ -7,30 +8,31 @@ import {
   showBestMoveArrowAtom,
   showPlayerMoveIconAtom,
 } from "../states";
-import { useMemo } from "react";
-import { useScreenSize } from "@/hooks/useScreenSize";
+import { useTheme, useMediaQuery } from "@mui/material";
 import { Color } from "@/types/enums";
 import Board from "@/components/board";
 import { usePlayersNames } from "@/hooks/usePlayerNames";
 
 export default function BoardContainer() {
-  const screenSize = useScreenSize();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("lg"));
   const boardOrientation = useAtomValue(boardOrientationAtom);
   const showBestMoveArrow = useAtomValue(showBestMoveArrowAtom);
   const { whiteName, whiteElo, blackName, blackElo } =
     usePlayersNames(gameAtom);
+  const [boardSize, setBoardSize] = useState(500);
 
-  const boardSize = useMemo(() => {
-    const width = screenSize.width;
-    const height = screenSize.height;
+  useEffect(() => {
+    const updateBoardSize = () => {
+      const width = isSmallScreen ? window.innerWidth : window.innerWidth - 700;
+      const height = isSmallScreen ? window.innerHeight - 150 : window.innerHeight * 0.95;
+      setBoardSize(Math.min(width, height));
+    };
 
-    // 1200 is the lg layout breakpoint
-    if (window?.innerWidth < 1200) {
-      return Math.min(width, height - 150);
-    }
-
-    return Math.min(width - 700, height * 0.95);
-  }, [screenSize]);
+    updateBoardSize();
+    window.addEventListener("resize", updateBoardSize);
+    return () => window.removeEventListener("resize", updateBoardSize);
+  }, [isSmallScreen]);
 
   return (
     <Board
@@ -38,13 +40,13 @@ export default function BoardContainer() {
       boardSize={boardSize}
       canPlay={true}
       gameAtom={boardAtom}
-      whitePlayer={whiteElo ? `${whiteName} (${whiteElo})` : whiteName}
-      blackPlayer={blackElo ? `${blackName} (${blackElo})` : blackName}
       boardOrientation={boardOrientation ? Color.White : Color.Black}
       currentPositionAtom={currentPositionAtom}
       showBestMoveArrow={showBestMoveArrow}
       showPlayerMoveIconAtom={showPlayerMoveIconAtom}
       showEvaluationBar={true}
+      whitePlayer={`${whiteName}${whiteElo ? ` (${whiteElo})` : ""}`}
+      blackPlayer={`${blackName}${blackElo ? ` (${blackElo})` : ""}`}
     />
   );
 }

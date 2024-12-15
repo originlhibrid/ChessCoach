@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { playGameEndSound } from "@/lib/sounds";
 import UndoMoveButton from "./undoMoveButton";
 import { getChessCoaching } from "@/lib/openai";
+import Board from "./board";
 
 export default function GameInProgress() {
   const game = useAtomValue(gameAtom);
@@ -45,7 +46,7 @@ export default function GameInProgress() {
   return (
     <Container maxWidth="xl" sx={{ py: 3, height: '100vh' }}>
       <Grid container spacing={2} sx={{ height: '100%' }}>
-        {/* Game in Progress Section */}
+        {/* Chess Board Section */}
         <Grid item xs={12} md={8} lg={8} sx={{ 
           display: 'flex', 
           flexDirection: 'column',
@@ -56,37 +57,45 @@ export default function GameInProgress() {
           <Box sx={{
             width: '100%',
             display: 'flex',
+            flexDirection: 'column',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
+            gap: 2
           }}>
-            <Grid
-              container
-              item
-              justifyContent="center"
-              alignItems="center"
-              xs={12}
-              gap={2}
-            >
-              <Typography color="white">Game in progress</Typography>
-              <CircularProgress size={20} color="info" />
+            <Board />
+
+            <Grid container spacing={2} justifyContent="center" alignItems="center">
+              <Grid item>
+                <Typography sx={{ color: theme.palette.text.primary }}>
+                  Game in progress
+                </Typography>
+              </Grid>
+              <Grid item>
+                <CircularProgress size={20} color="info" />
+              </Grid>
             </Grid>
 
-            <Grid item container justifyContent="center" alignItems="center" xs={12}>
-              <UndoMoveButton />
+            <Grid container spacing={2} justifyContent="center">
+              <Grid item>
+                <UndoMoveButton />
+              </Grid>
             </Grid>
 
-            <Grid item container justifyContent="center" alignItems="center" xs={12}>
-              <Button 
-                variant="contained" 
-                onClick={getCoaching}
-                disabled={isAnalyzing}
-                sx={{ mr: 1 }}
-              >
-                {isAnalyzing ? 'Analyzing...' : 'Get Coaching'}
-              </Button>
-              <Button variant="outlined" onClick={handleResign}>
-                Resign
-              </Button>
+            <Grid container spacing={2} justifyContent="center">
+              <Grid item>
+                <Button 
+                  variant="contained" 
+                  onClick={getCoaching}
+                  disabled={isAnalyzing}
+                >
+                  {isAnalyzing ? 'Analyzing...' : 'Get Coaching'}
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button variant="outlined" onClick={handleResign}>
+                  Resign
+                </Button>
+              </Grid>
             </Grid>
           </Box>
         </Grid>
@@ -107,14 +116,20 @@ export default function GameInProgress() {
             }}
           >
             <Typography variant={isMobile ? 'h6' : 'h5'} gutterBottom>
-              Coach's Analysis:
+              Coach's Analysis
             </Typography>
             <Box sx={{ 
               fontSize: isMobile ? '0.9rem' : '1rem',
               lineHeight: isMobile ? 1.4 : 1.6
             }}>
               {analysis && (
-                <Typography variant="body2" color="white" style={{ whiteSpace: 'pre-line' }}>
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: theme.palette.text.primary,
+                    whiteSpace: 'pre-line' 
+                  }}
+                >
                   {analysis}
                 </Typography>
               )}
